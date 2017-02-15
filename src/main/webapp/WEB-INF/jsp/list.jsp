@@ -28,10 +28,14 @@
                     <tbody>
                         <c:forEach var="sk" items="${list}">
                             <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>${sk.name}</td>
+                                <td>${sk.number}</td>
+                                <td><fmt:formatDate value="${sk.startTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                <td><fmt:formatDate value="${sk.endTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                <td><fmt:formatDate value="${sk.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                <td>
+                                    <a class="btn btn-info" href="/seckill/${sk.seckillId}/detail" target="_blank">detail</a>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>
