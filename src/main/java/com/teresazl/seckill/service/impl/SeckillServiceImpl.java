@@ -100,6 +100,7 @@ public class SeckillServiceImpl implements SeckillService {
         }
 
         // 执行秒杀逻辑：减库存 + 记录购买行为
+        // 记录购买行为 + 减库存 可以减少一倍的网络延迟
         Date nowTime = new Date();
 
         try {
