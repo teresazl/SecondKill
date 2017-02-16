@@ -2,6 +2,7 @@ package com.teresazl.seckill.service.impl;
 
 import com.teresazl.seckill.dao.SeckillDao;
 import com.teresazl.seckill.dao.SuccessKilledDao;
+import com.teresazl.seckill.dao.cache.RedisDao;
 import com.teresazl.seckill.dto.Exposer;
 import com.teresazl.seckill.dto.SeckillExecution;
 import com.teresazl.seckill.entity.Seckill;
@@ -36,6 +37,9 @@ public class SeckillServiceImpl implements SeckillService {
     @Autowired
     private SuccessKilledDao successKilledDao;
 
+    @Autowired
+    private RedisDao redisDao;
+
     // 盐值
     private final String salt = "asd;jjashd!*&%^&@sadf";
 
@@ -48,10 +52,18 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     public Exposer exportSeckillUrl(long seckillId) {
-        Seckill seckill = seckillDao.queryById(seckillId);
-
+        // 缓存优化 超时的基础上维护一致性
+        // 1.访问redis
+        Seckill seckill = redisDao.getSeckill(seckillId);
         if (seckill == null) {
-            return new Exposer(false, seckillId);
+            // 2.访问数据库
+            seckill = seckillDao.queryById(seckillId);
+            if (seckill == null) { // 数据库都没有
+                return new Exposer(false, seckillId);
+            } else {
+                // 3.存入redis
+                redisDao.putSeckill(seckill);
+            }
         }
 
         Date startTime = seckill.getStartTime();
